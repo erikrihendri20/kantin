@@ -50,14 +50,13 @@ class Menu extends BaseController
         $indeks = $this->request->getGet('indeks');
         return $this->respond($this->menu_model->getMenu(session()->id,$keyword,$limit,$indeks));
     }
+
     public function getPaginMenu()
     {
         $keyword = $this->request->getGet('keyword');
         
         return $this->respond($this->menu_model->getPaginMenu(session()->id,$keyword));
     }
-
-
 
     public function getToping($menu_id)
     {
@@ -137,7 +136,7 @@ class Menu extends BaseController
             ];
             if($photo->isValid()){
                 $menu['photo'] = $photo->getRandomName();
-                $photo->move('./assets/img/menu', $menu['photo']);
+                $photo->move('./assets/img/menu/', $menu['photo']);
             }else{
                 $menu['photo'] = 'default.png';
             }
@@ -284,7 +283,7 @@ class Menu extends BaseController
                 $old_photo = "./assets/img/menu/" . $data['menu']['photo'];
                 unlink($old_photo);
                 $menu['photo'] = $photo->getRandomName();
-                $photo->move('./assets/img/menu', $menu['photo']);
+                $photo->move('./assets/img/menu/', $menu['photo']);
                 $this->menu_model
                 ->set('name' , $this->request->getPost('name'))
                 ->set('type' , $this->request->getPost('type'))

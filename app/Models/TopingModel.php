@@ -14,7 +14,7 @@ class TopingModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['menu_id' , 'name' , 'type'];
+    protected $allowedFields = ['menu_id' , 'name'];
 
     protected $protectFields = false;
 

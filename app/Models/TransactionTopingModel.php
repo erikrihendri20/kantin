@@ -36,17 +36,71 @@ class TransactionTopingModel extends Model
         ->getRowArray();
     }
     
-    public function getTopingTransaction($user_id)
+    public function getTopingTransaction($user_id , $status)
     {
+        if(is_array($status)){
+            return $this->builder()
+            ->join('transaction_menu' , 'transaction_toping.transaction_menu_id=transaction_menu.id')
+            ->join('transaction' , 'transaction_menu.transaction_id=transaction.id')
+            ->join('toping' , 'transaction_toping.toping_id=toping.id')
+            ->whereIn('transaction.status',$status)
+            ->where('transaction.user_id',$user_id)
+            ->select('transaction_menu.id as transaction_menu_id , transaction_menu.menu_id as menu_id , toping.name as name ,
+            transaction_toping.toping_id as toping_id , transaction_toping.price')
+            ->get()
+            ->getResultArray();
+        }
         return $this->builder()
         ->join('transaction_menu' , 'transaction_toping.transaction_menu_id=transaction_menu.id')
         ->join('transaction' , 'transaction_menu.transaction_id=transaction.id')
-        ->where('transaction.status',1)
+        ->join('toping' , 'transaction_toping.toping_id=toping.id')
+        ->where('transaction.status',$status)
         ->where('transaction.user_id',$user_id)
-        ->select('transaction_menu.menu_id as menu_id , 
-        transaction_toping.toping_id')
+        ->select('transaction_menu.id as transaction_menu_id , transaction_menu.menu_id as menu_id , toping.name as name ,
+        transaction_toping.toping_id as toping_id , transaction_toping.price')
         ->get()
         ->getResultArray();
+    }
+    
+    public function getTopingOrderList($canteen_id , $status)
+    {
+        if(is_array($status)){
+            return $this->builder()
+            ->join('transaction_menu' , 'transaction_toping.transaction_menu_id=transaction_menu.id')
+            ->join('transaction' , 'transaction_menu.transaction_id=transaction.id')
+            ->join('toping' , 'transaction_toping.toping_id=toping.id')
+            ->whereIn('transaction.status',$status)
+            ->where('transaction.canteen_id',$canteen_id)
+            ->select('transaction_menu.id as transaction_menu_id , transaction_menu.menu_id as menu_id , toping.name as name ,
+            transaction_toping.toping_id as toping_id , transaction_toping.price')
+            ->get()
+            ->getResultArray();
+        }
+        return $this->builder()
+        ->join('transaction_menu' , 'transaction_toping.transaction_menu_id=transaction_menu.id')
+        ->join('transaction' , 'transaction_menu.transaction_id=transaction.id')
+        ->join('toping' , 'transaction_toping.toping_id=toping.id')
+        ->where('transaction.status',$status)
+        ->where('transaction.canteen_id',$canteen_id)
+        ->select('transaction_menu.id as transaction_menu_id , transaction_menu.menu_id as menu_id , toping.name as name ,
+        transaction_toping.toping_id as toping_id , transaction_toping.price')
+        ->get()
+        ->getResultArray();
+    }
+
+    public function deleteTopingCart($transaction_id)
+    {   
+        return $this->db->query(
+            '
+                DELETE 
+                FROM `transaction_toping` 
+                WHERE transaction_menu_id IN (
+                    SELECT id
+                    FROM transaction_menu
+                    WHERE transaction_toping.transaction_menu_id=transaction_menu.id AND
+                    transaction_menu.transaction_id='.$transaction_id.')
+            '
+        );
     }
 
     

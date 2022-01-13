@@ -30,13 +30,13 @@ class AuthFilter implements FilterInterface
             
             case '3':
                 if($request->getUri()->getSegment(1)!='Penjual'){
-                    return redirect()->to(base_url('Penjual/Pesanan'));
+                    return redirect()->to(base_url('Penjual/Order'));
                 }
                 break;
             
             case '4':
                 if($request->getUri()->getSegment(1)!='Pembeli'){
-                    return redirect()->to(base_url('Pembeli/Pesan'));
+                    return redirect()->to(base_url('Pembeli/Order'));
                 }
                 break;
             

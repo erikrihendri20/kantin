@@ -14,7 +14,7 @@ class MenuModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['user_id' , 'name' , 'type' , 'type' ,'description'];
+    protected $allowedFields = ['user_id' , 'name' , 'type' ,'description'];
 
     protected $protectFields = false;
 
@@ -27,13 +27,27 @@ class MenuModel extends Model
     protected $validationMessages = [];
     protected $skipValidation     = false;
 
-    public function getMenu($user_id,$keyword=null , $limit , $indeks)
+    public function getMenu($canteen_id=null , $keyword=null , $limit , $indeks)
     {
         $this->builder()->select('menu.id as id , menu.name as menu_name , menu.type as type_kode , menu_type.name as type_name , menu.price as price , menu.description as description, menu.photo as photo')
-        ->where('user_id' , $user_id)
+        ->join('users' , 'menu.user_id=users.id')
         ->join('menu_type','menu.type=menu_type.id')
+        ->select('
+            users.name as kantin_name , 
+            users.id as kantin_id , 
+            menu.id as menu_id , 
+            menu.name as menu_name , 
+            menu.photo as photo , 
+            menu_type.id as type_id , 
+            menu_type.name as type_name , 
+            menu.price as price , 
+            menu.description as description
+        ')
         ->limit($limit,$indeks);
 
+        if($canteen_id){
+            $this->builder()->where('user_id' , $canteen_id);
+        }
         if($keyword){
             $this->builder()->like('menu.name',$keyword);
         }
@@ -41,12 +55,15 @@ class MenuModel extends Model
         return $this->builder()->get()->getResultArray();
     }
 
-    public function getPaginMenu($user_id , $keyword=null)
+    public function getPaginMenu($canteen_id=null , $keyword=null)
     {
         $this->builder()->select('menu.id as id , menu.name as menu_name , menu.type as type_kode , menu_type.name as type_name , menu.price as price , menu.description as description, menu.photo as photo')
-        ->where('user_id' , $user_id)
+        ->where('user_id' , $canteen_id)
         ->join('menu_type','menu.type=menu_type.id');
 
+        if($canteen_id){
+            $this->builder()->where('user_id' , $canteen_id);
+        }
         if($keyword){
             $this->builder()->like('menu.name',$keyword);
         }
@@ -54,7 +71,36 @@ class MenuModel extends Model
         return $this->builder()->countAllResults();
     }
 
-    public function getMenuPembeli($keyword=null , $limit , $indeks)
+    public function getMenuPembeli($canteen_id , $keyword=null , $limit , $indeks)
+    {
+        $this->builder()
+        ->join('users' , 'menu.user_id=users.id')
+        ->join('menu_type' , 'menu.type=menu_type.id')
+        ->select('
+        users.name as kantin_name , 
+        users.id as kantin_id , 
+        menu.id as menu_id , 
+        menu.name as menu_name , 
+        menu.photo as photo , 
+        menu_type.id as type_id , 
+        menu_type.name as type_name , 
+        menu.price as price , 
+        menu.description as description')
+        ->where('users.id' , $canteen_id)
+        ->limit($limit , $indeks);
+
+
+        if($keyword){
+            // $this->builder()->like('users.name',$keyword);
+            $this->builder()->like('menu.name',$keyword);
+            // $this->builder()->like('menu_type.name',$keyword);
+            // $this->builder()->like('menu.description',$keyword);
+        }
+
+        return $this->builder()->get()->getResultArray();
+    }
+
+    public function getPaginMenuPembeli($keyword=null , $canteen_id)
     {
         $this->builder()->join('users' , 'menu.user_id=users.id')
         ->join('menu_type' , 'menu.type=menu_type.id')
@@ -68,37 +114,9 @@ class MenuModel extends Model
         menu_type.name as type_name , 
         menu.price as price , 
         menu.description as description')
-        ->limit($limit , $indeks);
-
+        ->where('users.id' , $canteen_id);
         if($keyword){
-            $this->builder()->like('users.name',$keyword)
-            ->orLike('menu.name',$keyword)
-            ->orLike('menu_type.name',$keyword)
-            ->orLike('menu.description',$keyword);
-        }
-
-        return $this->builder()->get()->getResultArray();
-    }
-
-    public function getPaginMenuPembeli($keyword=null)
-    {
-        $this->builder()->join('users' , 'menu.user_id=users.id')
-        ->join('menu_type' , 'menu.type=menu_type.id')
-        ->select('
-        users.name as kantin_name , 
-        users.id as kantin_id , 
-        menu.id as menu_id , 
-        menu.name as menu_name , 
-        menu.photo as photo , 
-        menu_type.id as type_id , 
-        menu_type.name as type_name , 
-        menu.price as price , 
-        menu.description as description');
-        if($keyword){
-            $this->builder()->like('users.name',$keyword)
-            ->orLike('menu.name',$keyword)
-            ->orLike('menu_type.name',$keyword)
-            ->orLike('menu.description',$keyword);
+            $this->builder()->like('menu.name',$keyword);
         }
 
         return $this->builder()->countAllResults();

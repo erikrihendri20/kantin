@@ -1,0 +1,115 @@
+.custom-badge{
+    border: none;
+}
+
+.content{
+    padding: 0rem !important;
+    border-radius: 0;
+
+}
+
+#catatan{
+    border-radius: 0;
+}
+
+.card-menu{
+    border-radius: 0;
+}
+
+#price-table{
+    width: 100%;
+    /* margin-left: 15px;
+    margin-right: 15px; */
+}
+
+.price{
+    text-align: right;
+}
+
+#label-total{
+    font-size: 20px;
+}
+
+#price-total{
+    font-size: 20px;
+}
+
+.price-total{
+    color: orangered;
+}
+
+#footer-cart{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 0;
+    border: none;
+}
+
+#footer-cart-price{
+    display: inline;
+    float: left !important;
+    width: 68%;
+}
+
+#footer-cart-count{
+    display: inline;
+    float: right !important;
+    width: 32%;
+}
+
+#footer-cart-price-text{
+    text-align: right;
+    margin-bottom: 0;
+}
+
+#footer-cart-count-text{
+    margin-bottom: 0;
+}
+
+.toping-item{
+    font-size: .875rem;
+}
+
+.custom-background-cart{
+    background-color: white;
+    box-shadow: none;
+    border-bottom: lightgrey solid 1px;
+    border-top: lightgrey solid 1px;
+}
+
+.custom-background-cart:first-child{
+    border-top: none;
+}
+.custom-background-cart:last-child{
+    border-bottom: none;
+}
+
+.custom-background-cart-header{
+    background-color: white;
+    box-shadow: none;
+    border: lightgrey solid 1px;
+}
+
+.custom-background-cart:hover{
+    background-color: white;
+}
+
+.navbar-cart-item{
+    padding-right: 0px;
+}
+
+.custom-background-toping{
+    background-color: white;
+    box-shadow: none;
+    border: none;
+}
+
+#refresh-button{
+    position: absolute;
+    border: none;
+    top: 0;
+    right: 15px;
+    margin-top: 45px;
+}

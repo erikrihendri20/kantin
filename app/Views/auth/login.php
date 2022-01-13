@@ -29,17 +29,17 @@
   <hr class="bg-secondary">
   
   <div class="social-auth-links text-center mt-2 mb-3">
-    <a href="#" class="btn btn-block btn-primary">
-      <img src="<?= base_url('assets/img/sipadu.png'); ?>" style="width: 20px;" alt="sipadu"></i> Masuk dengan sipadu
+    <a href="<?= base_url('Auth/login_sso'); ?>" class="btn btn-block btn-light border-secondary">
+      <img src="<?= base_url('assets/img/google.png'); ?>" style="width: 20px;" alt="sipadu"></i> Masuk dengan google
     </a>
   </div>
   
   <!-- <p class="mb-1">
     <a href="forgot-password.html">I forgot my password</a>
   </p> -->
-  <p class="mb-0">
+  <!-- <p class="mb-0">
     Belum mempunyai akun? 
     <a href="register.html" class="text-center">Daftar</a>
-  </p>
+  </p> -->
 
 <?= $this->endSection(); ?>

@@ -27,19 +27,19 @@ class MenuTypeModel extends Model
     protected $validationMessages = [];
     protected $skipValidation     = false;
 
-    public function getMenu($user_id,$type=null,$keyword=null)
-    {
-        $this->builder()->select('menu.id as id , menu.name as menu_name , menu.type as type_kode , menu_type.name as type_name , menu.price as price , menu.description')
-        ->where('user_id' , $user_id)
-        ->join('menu_type','menu.type=menu_type.id');
+    // public function getMenu($user_id,$type=null,$keyword=null)
+    // {
+    //     $this->builder()->select('menu.id as id , menu.name as menu_name , menu.type as type_kode , menu_type.name as type_name , menu.price as price , menu.description')
+    //     ->where('user_id' , $user_id)
+    //     ->join('menu_type','menu.type=menu_type.id');
 
-        if($type){
-            $this->builder()->where('menu.type' , $type);
-        }
-        if($keyword){
-            $this->builder()->like('menu.name',$keyword);
-        }
+    //     if($type){
+    //         $this->builder()->where('menu.type' , $type);
+    //     }
+    //     if($keyword){
+    //         $this->builder()->like('menu.name',$keyword);
+    //     }
 
-        return $this->builder()->get()->getResultArray();
-    }
+    //     return $this->builder()->get()->getResultArray();
+    // }
 }

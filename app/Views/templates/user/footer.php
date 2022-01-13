@@ -1,11 +1,9 @@
   <!-- /.content-wrapper -->
-  <footer class="main-footer">
+  <!-- <footer class="main-footer">
     <strong>Copyright &copy; 2021 <a href="<?= base_url(); ?>">Kantin STIS</a>.</strong>
     All rights reserved.
-    <!-- <div class="float-right d-none d-sm-inline-block">
-      <b>Version</b> 3.1.0
-    </div> -->
-  </footer>
+
+  </footer> -->
 
   <!-- Control Sidebar -->
   <aside class="control-sidebar control-sidebar-dark">
@@ -33,6 +31,7 @@
 
 
 <!-- data table -->
+<?php if(in_array('datatable' , $plugins)): ?>
 <script src="<?= base_url('assets/admin-lte/plugins/datatables/jquery.dataTables.min.js'); ?>"></script>
 <script src="<?= base_url('assets/admin-lte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js'); ?>"></script>
 <script src="<?= base_url('assets/admin-lte/plugins/datatables-responsive/js/dataTables.responsive.min.js'); ?>"></script>
@@ -45,6 +44,10 @@
 <script src="<?= base_url('assets/admin-lte/plugins/datatables-buttons/js/buttons.html5.min.js'); ?>"></script>
 <script src="<?= base_url('assets/admin-lte/plugins/datatables-buttons/js/buttons.print.min.js'); ?>"></script>
 <script src="<?= base_url('assets/admin-lte/plugins/datatables-buttons/js/buttons.colVis.min.js'); ?>"></script>
+<?php endif ?>
+<?php if(in_array('chartjs' , $plugins)): ?>
+<script src="<?= base_url('assets/admin-lte/plugins/chart.js/Chart.min.js'); ?>"></script>
+<?php endif ?>
 
 <!-- AdminLTE for demo purposes -->
 <!-- <script src="<?= base_url('assets/admin-lte/dist/js/demo.js'); ?>"></script> -->

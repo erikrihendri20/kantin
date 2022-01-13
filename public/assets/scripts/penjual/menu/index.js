@@ -86,7 +86,11 @@ function pagin(keyword=null) {
             per_page_length = 10
             pagin_length = Math.ceil(data_length/per_page_length)
             position = ($('.pagin-active').children().data('id')) ? $('.pagin-active').children().data('id') : 1
-            li = `<li class="page-item active pagin-active"><button class="page-link pagin-number" data-id="1" id="1">1</button></li>`
+            if(pagin_length>1){
+                li = `<li class="page-item active pagin-active"><button class="page-link pagin-number" data-id="1" id="1">1</button></li>`
+            }else{
+                li = ``
+            }
             for (let i = 2; i <= pagin_length; i++) {
                 li += `<li class="page-item"><button class="page-link pagin-number" data-id="${i}" id="${i}">${i}</button></li>`
             }

@@ -27,12 +27,26 @@ class TransactionModel extends Model
     protected $validationMessages = [];
     protected $skipValidation     = false;
 
-    public function checkTransaction($status , $user_id)
+    public function checkTransaction($user_id , $status=null)
     {
-        return $this->builder()
-        ->where('status' , $status)
-        ->where('user_id' , $user_id)
-        ->get()->getRowArray();
+        if($status){
+            return $this->builder()
+            ->where('status' , $status)
+            ->where('user_id' , $user_id)
+            ->get()->getRowArray();
+        }else{
+            return $this->builder()
+            ->where('user_id' , $user_id)
+            ->get()->getRowArray();
+        }
     }
     
+    public function takeOrder($transaction_id , $status)
+    {
+        return $this->builder()
+        ->set('status', $status)
+        ->where('id',$transaction_id)
+        ->update();
+    }
+
 }

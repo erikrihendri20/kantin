@@ -1,7 +1,7 @@
 <!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
+<aside class="main-sidebar sidebar-dark-light elevation-4" style="background-color: #17a2b8;">
     <!-- Brand Logo -->
-    <a href="index3.html" class="brand-link">
+    <a href="<?= base_url(''); ?>" class="brand-link" style="background-color: #17a2b8;">
       <img src="<?= base_url('assets/admin-lte/dist/img/AdminLTELogo.png'); ?>" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
       <span class="brand-text font-weight-light">KantinSTIS</span>
     </a>
@@ -72,10 +72,18 @@
             <li class="nav-header">PENJUAL</li>
 
             <li class="nav-item">
-              <a href="<?= base_url('Penjual/Pesanan'); ?>" class="nav-link <?= ($active=='Daftar Pesanan') ? 'active' : ''; ?>">
+              <a href="<?= base_url('Penjual/Order'); ?>" class="nav-link <?= ($active=='Order') ? 'active' : ''; ?>">
                 <i class="nav-icon fas fa-clipboard-list"></i>
                 <p>
                   Daftar Pesanan
+                </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?= base_url('Penjual/MyCanteen'); ?>" class="nav-link <?= ($active=='My Canteen') ? 'active' : ''; ?>">
+                <i class="nav-icon fas fa-cog"></i>
+                <p>
+                  Kantinku
                 </p>
               </a>
             </li>
@@ -87,10 +95,37 @@
                 </p>
               </a>
             </li>
+
+            <li class="nav-header">PENJUAL</li>
+            <li class="nav-item">
+              <a href="<?= base_url('Penjual/Dashboard'); ?>" class="nav-link <?= ($active=='Dashboard') ? 'active' : ''; ?>">
+                <i class="nav-icon fas fa-tachometer-alt"></i>
+                <p>
+                  Dashboard
+                </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?= base_url('Penjual/Selling'); ?>" class="nav-link <?= ($active=='Selling') ? 'active' : ''; ?>">
+                <i class="nav-icon fas fa-chart-line"></i>
+                <p>
+                  Penjualan
+                </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="<?= base_url('Penjual/HistoryTransaction'); ?>" class="nav-link <?= ($active=='History Transaction') ? 'active' : ''; ?>">
+                <i class="nav-icon fas fa-history"></i>
+                <p>
+                  Riwayat
+                </p>
+              </a>
+            </li>
+            
           <?php elseif(session()->role==4): ?>
             <li class="nav-header">PEMBELI</li>
             <li class="nav-item">
-              <a href="<?= base_url('Penjual/Menu'); ?>" class="nav-link <?= ($active=='Pesan') ? 'active' : ''; ?>">
+              <a href="<?= base_url('Pembeli/Order'); ?>" class="nav-link <?= ($active=='Order') ? 'active' : ''; ?>">
                 <i class="nav-icon fas fa-utensils"></i>
                 <p>
                   Pesan
@@ -98,6 +133,23 @@
               </a>
             </li>
 
+            <li class="nav-item">
+              <a href="<?= base_url('Pembeli/Checkout'); ?>" class="nav-link <?= ($active=='Checkout') ? 'active' : ''; ?>">
+                <i class="nav-icon fas fa-shopping-cart"></i>
+                <p>
+                  Keranjang
+                </p>
+              </a>
+            </li>
+            
+            <li class="nav-item">
+              <a href="<?= base_url('Pembeli/Waitinglist'); ?>" class="nav-link <?= ($active=='WaitingList') ? 'active' : ''; ?>">
+                <i class="nav-icon far fa-clock"></i>
+                <p>
+                  Tunggu Pesanan
+                </p>
+              </a>
+            </li>
 
           <?php endif ?>
 
