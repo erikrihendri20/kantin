@@ -18,13 +18,13 @@ class AuthFilter implements FilterInterface
         switch ($role) {
             case '1':
                 if($request->getUri()->getSegment(1)!='Admin'){
-                    return redirect()->to(base_url('Admin/Home'));
+                    return redirect()->to(base_url('Admin/Dashboard'));
                 }
                 break;
 
             case '2':
                 if($request->getUri()->getSegment(1)!='Admin'){
-                    return redirect()->to(base_url('Admin/Home'));
+                    return redirect()->to(base_url('Admin/Dashboard'));
                 }
                 break;
             
@@ -43,8 +43,6 @@ class AuthFilter implements FilterInterface
             default:
                 break;
         }
-        
-        // return redirect()->to(base_url('Admin/Home/index'));
     }
 
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)

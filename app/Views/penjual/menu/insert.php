@@ -43,6 +43,16 @@
                   </div>
                 </div>
 
+                <div class="input-group mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" style="width: 40px;"><i class="fas fa-clock"></i></span>
+                  </div>
+                  <input type="number" class="form-control <?= ($val->hasError('time_estimate')) ? 'is-invalid' : ''; ?>" value="<?= old('time_estimate'); ?>" placeholder="Perkiraan waktu penyiapan menu (dalam menit)" name="time_estimate" min=0>
+                  <div class="invalid-feedback">
+                      <?= $val->getError('time_estimate'); ?>
+                  </div>
+                </div>
+
                 <div class="form-group">
                     <textarea class="form-control" rows="3" placeholder="Deskripsi makanan ..." name="description"></textarea>
                 </div>

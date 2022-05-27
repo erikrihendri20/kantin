@@ -19,8 +19,8 @@
     </div>
 </div>
 
-<button id="reset-cart" class="badge badge-danger">
-    Hapus Pesanan
+<button id="reset-cart" type="button" class="badge badge-danger">
+    Hapus Semua Pesanan
 </button>
 
 <button class="btn btn-light text-dark px-0 py-0" type="submit" id="footer-cart">

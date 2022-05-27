@@ -2,10 +2,9 @@
 
 namespace Config;
 
-use App\Filters\AdminFilter;
+use App\Filters\AuthApiFilter;
+use App\Filters\AuthDevFilter;
 use App\Filters\AuthFilter;
-use App\Filters\PembeliFilter;
-use App\Filters\PenjualFilter;
 use CodeIgniter\Config\BaseConfig;
 use CodeIgniter\Filters\CSRF;
 use CodeIgniter\Filters\DebugToolbar;
@@ -24,6 +23,8 @@ class Filters extends BaseConfig
         'toolbar'  => DebugToolbar::class,
         'honeypot' => Honeypot::class,
         'auth'     => AuthFilter::class,
+        'auth_dev' => AuthDevFilter::class,
+        'auth_api' => AuthApiFilter::class,
     ];
 
     /**
@@ -36,7 +37,7 @@ class Filters extends BaseConfig
         'before' => [
             // 'honeypot',
             // 'csrf',
-            'auth' => ['except' => 'Auth/*']
+            'auth' => ['except' => ['Dev/*' , 'Auth/*' , 'Dev'] ],
         ],
         'after' => [
             'toolbar',
@@ -66,6 +67,11 @@ class Filters extends BaseConfig
      * @var array
      */
     public $filters = [
-        
+        'auth_dev' => [
+            'before' => ['Dev/Dashboard/*' , 'Dev/Dashboard' , 'Dev'],
+        ],
+        'auth_api' => [
+            'before' => ['Dev/Transaction' , 'Dev/Transaction/*']
+        ]
     ];
 }

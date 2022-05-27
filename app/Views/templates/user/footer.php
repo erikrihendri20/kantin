@@ -60,5 +60,100 @@
 <!-- myscript -->
 <script src="<?= base_url('assets/scripts/index.js')?>"></script>
 <script src="<?= base_url('assets/scripts') . '/' . $scripts; ?>.js"></script>
+
+<?php if(session()->role==4): ?>
+  <script>
+    notify = null
+
+    function diffTwoTime(date1, date2) {
+        var diff = {}                           // Initialisation du retour
+        var tmp = date2 - date1
+        tmp = Math.floor(tmp/1000)             // Nombre de secondes entre les 2 dates
+        diff.sec = tmp % 60                    // Extraction du nombre de secondes
+        tmp = Math.floor((tmp-diff.sec)/60)    // Nombre de minutes (partie entière)
+        diff.min = tmp % 60                    // Extraction du nombre de minutes
+        tmp = Math.floor((tmp-diff.min)/60)    // Nombre d'heures (entières)
+        diff.hour = tmp % 24                   // Extraction du nombre d'heures
+        tmp = Math.floor((tmp-diff.hour)/24)   // Nombre de jours restants
+        diff.day = tmp
+        return diff
+    }
+
+    function load_notify(){
+      $(document).ready(function() {
+        $.get('/Pembeli/Notify/getNotifyPembeli' , (data) => {
+          if(JSON.stringify(data)!=JSON.stringify(globalThis.notify)){
+            $('#notify-content').html(``);
+            globalThis.notify = data
+            count = 0;
+            data.forEach(n => {
+              if(n.status !=1){
+  
+                count+=Number(n.notify)
+                diff = diffTwoTime(new Date(n.updated_at) , new Date())
+                if(diff.day>0){
+                  time = diff.day + " hari"
+                }else if(diff.hour>0){
+                  time = diff.hour + " jam"
+                }else if(diff.min>0){
+                  time = diff.min + " menit"
+                }else{
+                  time = diff.sec + " detik"
+                }
+                switch (n.status) {
+                  case "1":
+                    status = "dalam keranjang"
+                    break;
+                    
+                  case "2":
+                    status = "dalam antrian"
+                    break;
+                    
+                  case "3":
+                    status = "sedang disiapkan"
+                    break;
+                    
+                  case "4":
+                    status = "sudah siap"
+                    break;
+  
+                  case "9":
+                    status = "dibatalkan"
+                    break;
+                    
+                  default:
+                    status = "pesanan sudah diambil"
+                    break;
+                }
+                $('#notify-content').append(`
+                  <a  id="${n.id}" class="dropdown-item ${(n.notify==1) ? 'bg-success' : ''}">
+                    <i class="fas fa-envelope mr-2"></i>pesanan ${n.id + " " +status} 
+                    <span class="float-right text-muted text-sm">${time}</span>
+                  </a>
+                `)
+                $('#'+n.id).click( () => {
+                  $.get('/Pembeli/Notify/setNotify/0/'+n.id , (data) => {
+                    if(n.status==5||n.status==9){
+                      // console.log(n.id)
+                      window.location.href = "/Pembeli/History#"+n.id
+                    }else{
+                      // console.log(n.id)
+                      window.location.href = "/Pembeli/WaitingList#"+n.id
+                    }
+                  })
+                })
+              }
+            })
+            $('#count-notify').html(count)
+            $('#count-notify-1').html((count == 0 ) ? 'tidak ada notifikasi terbaru' : 'ada ' + count + ' notifikasi')
+          }
+        })
+      });
+    }
+    
+    load_notify()
+    setInterval(load_notify , 5000)
+  </script>
+<?php endif ?>
 </body>
 </html>

@@ -5,6 +5,7 @@ use App\Controllers\BaseController;
 use App\Models\MenuModel;
 use App\Models\MenuTypeModel;
 use App\Models\TopingModel;
+use App\Models\UserLogModel;
 use App\Models\UserModel;
 use CodeIgniter\API\ResponseTrait;
 
@@ -15,6 +16,7 @@ class Menu extends BaseController
     protected $toping_model = null;
     protected $user_model = null;
     protected $menu_type_model = null;
+    protected $user_log_model = null;
 
     public function __construct()
     {
@@ -23,6 +25,7 @@ class Menu extends BaseController
         $this->toping_model = new TopingModel();
         $this->menu_type_model = new MenuTypeModel();
         $this->user_model = new UserModel();
+        $this->user_log_model = new UserLogModel();
     }
 
     public function index()
@@ -37,6 +40,7 @@ class Menu extends BaseController
                 ],
             ],
             'plugins' => [],
+            'visitor' => count($this->user_log_model->getVisitor()),
             'styles' => 'penjual/menu/index',
             'scripts' => 'penjual/menu/index'
         ];
@@ -48,14 +52,41 @@ class Menu extends BaseController
         $keyword = $this->request->getGet('keyword');
         $limit = $this->request->getGet('limit');
         $indeks = $this->request->getGet('indeks');
-        return $this->respond($this->menu_model->getMenu(session()->id,$keyword,$limit,$indeks));
+        $status = $this->request->getGet('status');
+        $menu = $this->menu_model->getMenu(session()->id,$keyword,$limit,$indeks,$status);
+        foreach ($menu as $key => $value) {
+            $menu[$key]['toping'] = $this->toping_model->where('menu_id' , $value['id'])->get()->getResultArray();
+        }
+        return $this->respond($menu);
     }
 
     public function getPaginMenu()
     {
         $keyword = $this->request->getGet('keyword');
-        
-        return $this->respond($this->menu_model->getPaginMenu(session()->id,$keyword));
+        $status = $this->request->getGet('status');
+        return $this->respond($this->menu_model->getPaginMenu(session()->id,$keyword,$status));
+    }
+
+    public function changeStatusMenu()
+    {
+        $id = $this->request->getPost('id');
+        $status = $this->request->getPost('status');
+        $this->menu_model->update($id,['status' => $status]);
+        return $this->respond([
+            'status' => true,
+            'message' => 'Status berhasil diubah'
+        ]);
+    }
+
+    public function changeStatusToping()
+    {
+        $id = $this->request->getPost('id');
+        $status = $this->request->getPost('status');
+        $this->toping_model->update($id,['status' => $status]);
+        return $this->respond([
+            'status' => true,
+            'message' => 'Status berhasil diubah'
+        ]);
     }
 
     public function getToping($menu_id)
@@ -82,6 +113,7 @@ class Menu extends BaseController
                 ],
             ],
             'plugins' => [],
+            'visitor' => count($this->user_log_model->getVisitor()),
             'styles' => 'penjual/menu/insert',
             'scripts' => 'penjual/menu/insert',
             'menu_types' => $this->menu_type_model->findAll()
@@ -113,7 +145,13 @@ class Menu extends BaseController
                         'mime_in' => 'gunakan ekstensi jpg,png,jpeg',
                         'max_size' => 'ukuran gambar maksimal 1 mb'
                     ]
-                ]
+                ],
+                'time_estimate' => [
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => 'estimasi waktu harus diisi'
+                    ]
+                ],
             ];
             if(!$this->validate($rules)){
                 $alert = [
@@ -132,6 +170,7 @@ class Menu extends BaseController
                 'name' => $this->request->getPost('name'),
                 'type' => $this->request->getPost('type'),
                 'price' => $this->request->getPost('price'),
+                'time_estimate' => $this->request->getPost('time_estimate'),
                 'description' => $this->request->getPost('description'),
             ];
             if($photo->isValid()){
@@ -181,6 +220,7 @@ class Menu extends BaseController
                 ],
             ],
             'plugins' => [],
+            'visitor' => count($this->user_log_model->getVisitor()),
             'styles' => 'penjual/menu/detail',
             'scripts' => 'penjual/menu/detail',
             'menu' => $this->menu_model->find($menu_id),
@@ -199,7 +239,12 @@ class Menu extends BaseController
         if($menu){
             if($menu['photo']!='default.png'){
                 $photo = "./assets/img/menu/" . $menu['photo'];
-                unlink($photo);
+                try {
+                    unlink($photo);
+                    //code...
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
             }
             $this->menu_model->delete($menu_id);
             $this->toping_model->where('menu_id' , $menu_id)->delete();
@@ -235,6 +280,7 @@ class Menu extends BaseController
                 ],
             ],
             'plugins' => [],
+            'visitor' => count($this->user_log_model->getVisitor()),
             'styles' => 'penjual/menu/edit',
             'scripts' => 'penjual/menu/edit',
             'menu_types' => $this->menu_type_model->findAll(),
@@ -281,7 +327,12 @@ class Menu extends BaseController
             $photo = $this->request->getFile('photo');
             if($photo->isValid()){
                 $old_photo = "./assets/img/menu/" . $data['menu']['photo'];
-                unlink($old_photo);
+                try {
+                    unlink($old_photo);
+                    //code...
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
                 $menu['photo'] = $photo->getRandomName();
                 $photo->move('./assets/img/menu/', $menu['photo']);
                 $this->menu_model
@@ -346,6 +397,7 @@ class Menu extends BaseController
                 ],
             ],
             'plugins' => [],
+            'visitor' => count($this->user_log_model->getVisitor()),
             'styles' => 'penjual/menu/insert-toping',
             'scripts' => 'penjual/menu/insert-toping'
         ];
@@ -423,6 +475,7 @@ class Menu extends BaseController
                 ],
             ],
             'plugins' => [],
+            'visitor' => count($this->user_log_model->getVisitor()),
             'styles' => 'penjual/menu/edit-toping',
             'scripts' => 'penjual/menu/edit-toping',
             'toping' => $this->toping_model->find($toping_id),

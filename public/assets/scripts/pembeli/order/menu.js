@@ -18,46 +18,88 @@ function getParamStand() {
     return urlParams.get('stand')
 }
 
+// isnowbeetweentime
+function isNowBetweenTime(startTime, endTime) {
+    var d = new Date(),
+        currentTime = d.getHours() + ':' + d.getMinutes() + ':' + d.getSeconds(),
+        startTime = startTime,
+        endTime = endTime;
+    if (currentTime >= startTime && currentTime <= endTime) {
+        return true;
+    } else {
+        return false;
+    }
+}
 function render_menu(data) {
     $('#daftar-menu').html('')
-    data.forEach(menu => {
+    if(!isNowBetweenTime(data['canteen_info']['open_hours'], data['canteen_info']['close_hours'])){
+        data['canteen_info']['status'] = 0
+    }
+    data['menu'].forEach(menu => {
         toping = ``
         menu['toping'].forEach(t => {
             toping+=`
             <li class="list-group-item my-0 py-0 bg-transparent">
-                <input type="checkbox" id="toping-${t.id}" class="toping menu-id-${menu.menu_id}" ${(t['checked'] ? 'checked' : '')} data-menu_id="${t['menu_id']}" data-toping_id="${t['id']}" value="option1">
-                <label for="toping-${t.id}">${t['name']} <small>(${t.price})</small></label>
+                <input ${(t.status==0) ? 'disabled="disabled"': ''} type="checkbox" id="toping-${t.id}" class="toping menu-id-${menu.menu_id}" ${(t['checked'] ? 'checked' : '')} data-menu_id="${t['menu_id']}" data-toping_id="${t['id']}">
+                <label for="toping-${t.id}">${(t.status==0) ? `<del>${t['name']} <small>(${t.price})</small></del>` : `${t['name']} <small>(${t.price})</small>`}</label>
             </li>`
         })
         price = (menu.count) ? ((menu.count!=0) ? menu.price*menu.count : menu.price)  : menu.price
-        $('#daftar-menu').append(`
-            <div class="col-12">
-                <div class="card ${(menu.count)? 'bg-info' : ''}" id="card-${menu.menu_id}">
-                    <div class="row">
-                        <div class="col-3 d-flex justify-content-center align-self-center">
-                            <img class="card-img-top img-menu" src="/assets/img/menu/${menu.photo}" alt="Card image cap">
-                        </div>
-                        <div class="col-9 ">
-                            <div class="card-body">
-                                <h5 class="card-title font-weight-bold text-uppercase">${(menu.menu_name.length>20) ? menu.menu_name.slice(0,20) + '..' : menu.menu_name}<small class="text-muted">*4.6</small></h5>
-                                <br>
-                                <p class="card-text my-0">${(menu.description.length>50) ? menu.description.slice(0,50) + '..' : menu.description}</p>
-                                
-                                <p class="card-text font-weight-bold my-0" id="price-${menu.menu_id}" data-price="${menu.price}">${formatRupiah(price.toString() , 'Rp')}</p>
-                                <button type="button" class="quantity-menu-minus btn btn-danger" data-id="${menu.menu_id}">-</button>
-                                <input type="text" class="quantity-menu-input" readonly data-id="${menu.menu_id}" id="quantity-menu-input-${menu.menu_id}" value="${(menu.count) ? menu.count : 0}"></input>
-                                <button type="button" class="quantity-menu-plus btn btn-success" data-id="${menu.menu_id}">+</button>
+        if(menu.status==1&&data['canteen_info']['status']==1){
+            $('#daftar-menu').append(`
+                <div class="col-12">
+                    <div class="custom-card card ${(menu.count)? 'bg-info' : ''}" id="card-${menu.menu_id}">
+                        <div class="row">
+                            <div class="col-3 d-flex justify-content-center align-self-center">
+                                <img class="card-img-top img-menu" src="/assets/img/menu/${menu.photo}" alt="Card image cap">
                             </div>
-                            <ul class="list-group list-group-flush" id="list-toping-${menu.menu_id}" style="display:${(!menu.count)?'none':''}" >
-                                ${toping}
-                            </ul>
+                            <div class="col-9 ">
+                                <div class="card-body">
+                                    <h5 class="card-title font-weight-bold text-uppercase">${(menu.menu_name.length>20) ? menu.menu_name.slice(0,20) + '..' : menu.menu_name}<sup class="text-secondary">${menu.rating}<i class="fas fa-star text-warning"></i></sup></h5>
+                                    <br>
+                                    <p class="card-text my-0">${(menu.description.length>50) ? menu.description.slice(0,50) + '..' : menu.description}</p>
+                                    
+                                    <p class="card-text font-weight-bold my-0" id="price-${menu.menu_id}" data-price="${menu.price}">${formatRupiah(price.toString() , 'Rp')}</p>
+                                    <button type="button" class="quantity-menu-minus btn btn-danger" data-id="${menu.menu_id}">-</button>
+                                    <input type="text" class="quantity-menu-input" readonly data-id="${menu.menu_id}" id="quantity-menu-input-${menu.menu_id}" value="${(menu.count) ? menu.count : 0}"></input>
+                                    <button type="button" class="quantity-menu-plus btn btn-success" data-id="${menu.menu_id}">+</button>
+                                </div>
+                                <ul class="list-group list-group-flush" id="list-toping-${menu.menu_id}" style="display:${(!menu.count)?'none':''}" >
+                                    ${toping}
+                                </ul>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div>`
-        )
+                </div>`
+            )
+        }else{
+            $('#daftar-menu').append(`
+                <div class="col-12 text-secondary">
+                    <div class="custom-card card ${(menu.count)? 'bg-info' : ''}" id="card-${menu.menu_id}">
+                        <div class="row">
+                            <div class="col-3 d-flex justify-content-center align-self-center">
+                                <img style="filter: grayscale(100%)" class="card-img-top img-menu" src="/assets/img/menu/${menu.photo}" alt="Card image cap">
+                            </div>
+                            <div class="col-9 ">
+                                <div class="card-body">
+                                    <h5 class="card-title font-weight-bold text-uppercase">${(menu.menu_name.length>20) ? menu.menu_name.slice(0,20) + '..' : menu.menu_name}<sup class="text-secondary">${menu.rating}<i class="fas fa-star text-secondary"></i></sup></h5>
+                                    <br>
+                                    <p class="card-text my-0">${(menu.description.length>50) ? menu.description.slice(0,50) + '..' : menu.description}</p>
+                                    
+                                    <p class="card-text font-weight-bold my-0" id="price-${menu.menu_id}" data-price="${menu.price}">${formatRupiah(price.toString() , 'Rp')}</p>
+                                    <p>${data['canteen_info']['status']!=0 ? 'menu kosong' : 'kantin tutup'}</p>
+                                </div>
+                                <ul class="list-group list-group-flush" id="list-toping-${menu.menu_id}" style="display:${(!menu.count)?'none':''}" >
+                                    ${toping}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>`
+            )
+        }
     })
-    if(data.length==0){
+    if(data['menu'].length==0){
         $('#daftar-menu').html('<div>menu tidak ditemukan</div>')
     }
 
@@ -84,7 +126,7 @@ function update_toping(canteen_id , menu_id , toping_id , value){
             value
         },
         (data) => {
-            load_cart()
+            sync()
         }
     )
 }
@@ -103,41 +145,14 @@ function cart(menu_id , count) {
             canteen_id:canteen_id
         },
         (data) => {
-            load_cart()
+            sync()
         }
     ).fail(function(xhr, status, error) {
-        if(xhr.responseJSON.messages.error=='different canteen'){
-            Swal.fire({
-                title: 'Berganti Kedai!',
-                text: "Apakah anda yakin akan ingin berganti kedai?",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ganti',
-                cancelButtonText: 'Batal'
-              }).then((result) => {
-                if (result.isConfirmed) {
-                    $.post(
-                        '/Pembeli/Order/updateCart',
-                        {
-                            menu_id:menu_id,
-                            count:count,
-                            canteen_id:canteen_id,
-                            change_canteen:true
-                        },
-                        (data) => {
-                            load_cart()
-                        }
-                    )
-                  Swal.fire(
-                    'Berhasil',
-                    'Berganti Kedai',
-                    'success'
-                  )
-                }
-            })
-        }
+        Swal.fire(
+            'Gagal',
+            'Gagal menambah menu',
+            'error'
+        )
     })
 }
 
@@ -288,7 +303,6 @@ async function load_menu(keyword=null , canteen_id , limit , indeks) {
         `/Pembeli/Order/getMenu`,
         {keyword , canteen_id , limit:limit , indeks:indeks},
         (data) => {
-
             data['toping'].map((val) => {
                 toping_transaction = data['toping_transaction'].find( (toping_transaction) => val.id==toping_transaction.toping_id )
                 if(toping_transaction){
@@ -306,7 +320,7 @@ async function load_menu(keyword=null , canteen_id , limit , indeks) {
                 }
             })
 
-            render_menu(data['menu'])
+            render_menu(data)
         } 
         
     )
@@ -335,20 +349,17 @@ async function load_cart() {
                 } )
             })
             render_cart(data)
-            // checkout(data)
         }
     )
 }
 
 function render_cart(data){
     
-    
-    
     item = ``
     
     data['menu_transaction'].forEach( (menu , i) => {
         item += `
-            <a href="#card-${menu.menu_id}" class="dropdown-item navbar-cart-item">
+            <a href="#card-${menu.menu_id}" class="dropdown-item navbar-cart-item" id="item-${menu.menu_id}">
                 <!-- Message Start -->
                 <div class="media">
                 <img src="/assets/img/menu/${menu.photo}" alt="User Avatar" class="img-size-50 mr-3 img-circle">
@@ -358,6 +369,7 @@ function render_cart(data){
                     </h3>
                     <p class="text-sm">Harga: ${menu.transaction_menu_price}</p>
                     <p class="text-sm text-muted">Jumlah: ${menu.count}</p>
+                    <button type="button" class="badge badge-danger delete-navbar-cart my-0" value="${menu.menu_id}" style="border:none">hapus</button>
                 </div>
                 </div>
                 <!-- Message End -->
@@ -376,15 +388,18 @@ function render_cart(data){
         `)
     }
 
-    // $('#view-all-navbar-cart-item').click((e) => {
-    //     // e.preventDefault()
-    //     $('#navbar-cart-item').css('display','block')
-    // })
-
+    $('.navbar-cart-item').click(function() {
+        return false
+    })
+    
+    $('.delete-navbar-cart').click( (e) => {
+        val = $(e.target).val()
+        cart(val,0)
+        $(`#item-${val}`).remove()
+        change_background(val,'light')
+    })
     $('.navbar-count-cart').html(data['count'])
 
-    
-    
     $('#nominal-price-total').html(`Rp.${data.total_price}`)
 }
 
@@ -403,27 +418,28 @@ async function search() {
     } )
 }
 
-// function checkout(data) {
-//     if(data.count>0){
-//         $('#footer-cart').attr('type' , 'submit')
-//     }else{
-//         $('#footer-cart').attr('type' , 'button')
-        
-//     }
-// }
-
 function reset_cart() {
     $('#reset-cart').click( () => {
-        $.get('/Pembeli/Order/deleteCart' , 
+        $.get('/Pembeli/Order/resetCart' , 
         (data) => {
+            keyword = $('#navbar-search').val()
+            pagin(keyword)
+            load_cart()
         })
+    })
+}
+
+function sync() {
+    $.get('/Pembeli/Order/sync' , (data) => {
+        keyword = $('#navbar-search').val()
+        pagin(keyword)
+        load_cart()
     })
 }
 
 $(document).ready( () => {
     // init
-    pagin()
-    search()
-    load_cart()
+    sync()
     reset_cart()
+    search()
 })

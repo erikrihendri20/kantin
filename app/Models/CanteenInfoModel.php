@@ -14,7 +14,7 @@ class CanteenInfoModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['name', 'rating' , 'user_id' , 'description'];
+    protected $allowedFields = ['name', 'rating' , 'user_id' , 'description , count_buyer'];
 
     protected $protectFields = false;
 

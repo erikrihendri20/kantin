@@ -19,7 +19,6 @@
   <link rel="stylesheet" href="<?= base_url('assets/admin-lte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css'); ?>">
   <link rel="stylesheet" href="<?= base_url('assets/admin-lte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css'); ?>">
   <?php endif ?>
-
   <!-- my style -->
   <link rel="stylesheet" href="<?= base_url('assets/styles') . '/' . $styles; ?>.css">
 
@@ -50,7 +49,7 @@
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Navbar Search -->
-      <?php if(isset($_GET['stand'])): ?>
+      <?php if(in_array($nav[0]['url'] , ['Pembeli/Order' , 'Penjual/Pay' , 'Penjual/Menu'])): ?>
       <li class="nav-item">
         <a class="nav-link" data-widget="navbar-search" href="#" role="button">
           <i class="fas fa-search"></i>
@@ -71,8 +70,21 @@
       </li>
       <?php endif ?>
       
-      
-      
+      <?php if(session()->role==4): ?>
+      <li class="nav-item dropdown">
+        <a class="nav-link" data-toggle="dropdown" href="#">
+          <i class="far fa-bell"></i>
+          <span class="badge badge-warning navbar-badge" id="count-notify">0</span>
+        </a>
+        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+          <span class="dropdown-item dropdown-header" id="count-notify-1">tidak ada notifikasi</span>
+          <div class="dropdown-divider"></div>
+            <div id="notify-content">
+              
+            </div>
+        </div>
+      </li>
+      <?php endif ?>
       
 
       <!-- Notifications Dropdown Menu -->

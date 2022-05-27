@@ -14,7 +14,7 @@ class TransactionModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['status' , 'user_id'];
+    protected $allowedFields = ['status' , 'user_id' , 'time_estimate' , 'testimonial'];
 
     protected $protectFields = false;
 
@@ -27,18 +27,23 @@ class TransactionModel extends Model
     protected $validationMessages = [];
     protected $skipValidation     = false;
 
-    public function checkTransaction($user_id , $status=null)
+    public function checkTransaction($user_id , $canteen_id=null , $status=null)
     {
         if($status){
-            return $this->builder()
+            $this->builder()
             ->where('status' , $status)
-            ->where('user_id' , $user_id)
-            ->get()->getRowArray();
+            ->where('user_id' , $user_id);
         }else{
-            return $this->builder()
-            ->where('user_id' , $user_id)
-            ->get()->getRowArray();
+            $this->builder()
+            ->where('user_id' , $user_id);
         }
+        if(!$canteen_id){
+            return $this->builder()
+            ->get()->getResultArray();
+        }
+        return $this->builder()
+        ->where('canteen_id' , $canteen_id)
+        ->get()->getRowArray();
     }
     
     public function takeOrder($transaction_id , $status)

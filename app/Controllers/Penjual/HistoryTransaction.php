@@ -5,6 +5,7 @@ use App\Controllers\BaseController;
 use App\Models\TransactionMenuModel;
 use App\Models\TransactionModel;
 use App\Models\TransactionTopingModel;
+use App\Models\UserLogModel;
 use CodeIgniter\API\ResponseTrait;
 
 class HistoryTransaction extends BaseController
@@ -15,6 +16,7 @@ class HistoryTransaction extends BaseController
     protected $transaction_menu_model = null;
     // protected $toping_model = null;
     protected $transaction_toping_model = null;
+    protected $user_log_model = null;
 
     public function __construct()
     {
@@ -23,6 +25,7 @@ class HistoryTransaction extends BaseController
         $this->transaction_menu_model = new TransactionMenuModel();
         // $this->toping_model = new TopingModel();
         $this->transaction_toping_model = new TransactionTopingModel();
+        $this->user_log_model = new UserLogModel();
     }
 
     public function index()
@@ -39,6 +42,7 @@ class HistoryTransaction extends BaseController
             'plugins' => [
                 'datatable'
             ],
+            'visitor' => count($this->user_log_model->getVisitor()),
             'styles' => 'penjual/history-transaction/index',
             'scripts' => 'penjual/history-transaction/index'
         ];
@@ -64,7 +68,8 @@ class HistoryTransaction extends BaseController
                     users.name as name')
                 ->whereIn('transaction.status' , [5,9])
                 ->where('transaction.canteen_id',$canteen_id)
-                ->where('transaction.updated_at BETWEEN "'. date('Y-m-d', strtotime($start_date)). '" and "'. date('Y-m-d', strtotime($end_date)).'"')
+                ->where('transaction.updated_at BETWEEN "'.$start_date.' 23:59:59'.'" AND "'.$end_date.' 23:59:59'.'"')
+                ->orderBy('updated_at' , 'DESC')
                 ->get()->getResultArray();
             }
         }else{
@@ -80,12 +85,13 @@ class HistoryTransaction extends BaseController
                 users.name as name')
             ->whereIn('transaction.status' , [5,9])
             ->where('transaction.canteen_id',$canteen_id)
+            ->orderBy('updated_at' , 'DESC')
             ->get()->getResultArray();
         }
         return $this->respond([
             'transaction' => $transaction,
-            'menu' => $this->transaction_menu_model->getMenuOrderList($canteen_id , [5,9]),
-            'toping' => $this->transaction_toping_model->getTopingOrderList($canteen_id , [5,9])
+            'menu' => $this->transaction_menu_model->getMenuOrderList($canteen_id , [5,9] , 1000,0),
+            'toping' => $this->transaction_toping_model->getTopingOrderList($canteen_id , [5,9] , 1000,0)
         ]);
     }
 

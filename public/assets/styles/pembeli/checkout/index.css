@@ -1,8 +1,3 @@
-.content{
-    padding: 0rem !important;
-    border-radius: 0;
-
-}
 
 #catatan{
     border-radius: 0;
@@ -98,4 +93,12 @@
     background-color: white;
     box-shadow: none;
     border: none;
+}
+.textarea-noted{
+    border-radius: 0px;
+    border-left:none ;
+    border-right:none ;
+}
+.subtotal{
+    border-top: 1px lightgrey solid;
 }

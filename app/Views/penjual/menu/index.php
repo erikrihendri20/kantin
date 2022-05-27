@@ -8,6 +8,22 @@
     </div>
 </div>
 
+<div class="row">
+    <div class="col">
+        <div class="form-group">
+            <select id="status" name="canteen-status" class="form-control filter-history">
+                <option value="1" class="status-option">
+                    Tersedia
+                </option>
+                <option value="0" class="status-option">
+                    Kosong
+                </option>
+            </select>
+        </div>
+    </div>
+</div>
+
+
 
 <div class="row" id="daftar-menu">
     

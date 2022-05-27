@@ -28,10 +28,10 @@
                 <div class="form-group">
                     <label for="canteen-status">Status Kantin</label>
                     <select id="canteen-status" name="canteen-status" class="form-control">
-                        <option value="2" <?= ($canteen['status']==2) ? 'selected' : ''; ?>>
+                        <option value="1" <?= ($canteen['status']==1) ? 'selected' : ''; ?>>
                             Buka
                         </option>
-                        <option value="1" <?= ($canteen['status']==1) ? 'selected' : ''; ?>>
+                        <option value="0" <?= ($canteen['status']==0) ? 'selected' : ''; ?>>
                             Tutup
                         </option>
                     </select>

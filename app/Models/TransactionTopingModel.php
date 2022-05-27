@@ -36,17 +36,18 @@ class TransactionTopingModel extends Model
         ->getRowArray();
     }
     
-    public function getTopingTransaction($user_id , $status)
+    public function getTopingTransaction($user_id , $status , $date=null)
     {
-        if(is_array($status)){
+        if($date){
             return $this->builder()
             ->join('transaction_menu' , 'transaction_toping.transaction_menu_id=transaction_menu.id')
             ->join('transaction' , 'transaction_menu.transaction_id=transaction.id')
             ->join('toping' , 'transaction_toping.toping_id=toping.id')
             ->whereIn('transaction.status',$status)
             ->where('transaction.user_id',$user_id)
-            ->select('transaction_menu.id as transaction_menu_id , transaction_menu.menu_id as menu_id , toping.name as name ,
-            transaction_toping.toping_id as toping_id , transaction_toping.price')
+            ->select('transaction_toping.id as id , transaction_menu.id as transaction_menu_id , transaction_menu.menu_id as menu_id , toping.name as name ,
+            transaction_toping.toping_id as toping_id , transaction_toping.price , toping.status as status')
+            ->where('transaction.updated_at BETWEEN "'. $date['start-date'].' 23:59:59'. '" and "'. $date['end-date'].' 23:59:59'.'"')
             ->get()
             ->getResultArray();
         }
@@ -54,38 +55,29 @@ class TransactionTopingModel extends Model
         ->join('transaction_menu' , 'transaction_toping.transaction_menu_id=transaction_menu.id')
         ->join('transaction' , 'transaction_menu.transaction_id=transaction.id')
         ->join('toping' , 'transaction_toping.toping_id=toping.id')
-        ->where('transaction.status',$status)
+        ->whereIn('transaction.status',$status)
         ->where('transaction.user_id',$user_id)
-        ->select('transaction_menu.id as transaction_menu_id , transaction_menu.menu_id as menu_id , toping.name as name ,
-        transaction_toping.toping_id as toping_id , transaction_toping.price')
+        ->select('transaction_toping.id as id , transaction_menu.id as transaction_menu_id , transaction_menu.menu_id as menu_id , toping.name as name ,
+        transaction_toping.toping_id as toping_id , transaction_toping.price , toping.status')
         ->get()
         ->getResultArray();
+        
     }
     
-    public function getTopingOrderList($canteen_id , $status)
+    public function getTopingOrderList($canteen_id , $status , $length , $index)
     {
-        if(is_array($status)){
-            return $this->builder()
-            ->join('transaction_menu' , 'transaction_toping.transaction_menu_id=transaction_menu.id')
-            ->join('transaction' , 'transaction_menu.transaction_id=transaction.id')
-            ->join('toping' , 'transaction_toping.toping_id=toping.id')
-            ->whereIn('transaction.status',$status)
-            ->where('transaction.canteen_id',$canteen_id)
-            ->select('transaction_menu.id as transaction_menu_id , transaction_menu.menu_id as menu_id , toping.name as name ,
-            transaction_toping.toping_id as toping_id , transaction_toping.price')
-            ->get()
-            ->getResultArray();
-        }
         return $this->builder()
         ->join('transaction_menu' , 'transaction_toping.transaction_menu_id=transaction_menu.id')
         ->join('transaction' , 'transaction_menu.transaction_id=transaction.id')
         ->join('toping' , 'transaction_toping.toping_id=toping.id')
-        ->where('transaction.status',$status)
+        ->whereIn('transaction.status',$status)
         ->where('transaction.canteen_id',$canteen_id)
-        ->select('transaction_menu.id as transaction_menu_id , transaction_menu.menu_id as menu_id , toping.name as name ,
-        transaction_toping.toping_id as toping_id , transaction_toping.price')
+        ->limit($length,$index)
+        ->select('transaction_toping.id as id , transaction_menu.id as transaction_menu_id , transaction_menu.menu_id as menu_id , toping.name as name ,
+        transaction_toping.toping_id as toping_id , transaction_toping.price, toping.status as status')
         ->get()
         ->getResultArray();
+        
     }
 
     public function deleteTopingCart($transaction_id)

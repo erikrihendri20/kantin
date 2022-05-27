@@ -16,6 +16,14 @@ function formatRupiah(angka, prefix) {
 function render_menu(data) {
     $('#daftar-menu').html('')
     data.forEach(menu => {
+        topings = ''
+        menu.toping.forEach(toping => {
+            topings+=
+            `<div class="custom-control custom-switch">
+                <input type="checkbox" ${(toping.status==1) ? 'checked' : ''} class="custom-control-input switch-toping" id="toping-status-${toping.id}">
+                <label class="custom-control-label" for="toping-status-${toping.id}">${toping.name}</label>
+            </div>`
+        });
         $('#daftar-menu').append(`
             <div class="col-12">
                 <div class="card">
@@ -25,22 +33,63 @@ function render_menu(data) {
                         </div>
                         <div class="col-9 ">
                             <div class="card-body">
-                                <h5 class="card-title font-weight-bold text-uppercase">${(menu.menu_name.length>20) ? menu.menu_name.slice(0,20) + '..' : menu.menu_name}<small class="text-muted">*4.6</small></h5>
+                                <h5 class="card-title font-weight-bold text-uppercase">${(menu.menu_name.length>20) ? menu.menu_name.slice(0,20) + '..' : menu.menu_name}<small class="text-muted">*${menu.rating}</small></h5>
                                 <br>
                                 <p class="card-text my-0">${(menu.description.length>50) ? menu.description.slice(0,50) + '..' : menu.description}</p>
-                                <p class="card-text font-weight-bold my-0">${formatRupiah(menu.price , 'Rp')}</p>
+                                <p class="card-text font-weight-bold my-0">${formatRupiah(menu.price , 'Rp')}<span class="text-secondary" > (${menu.time_estimate} menit)</span></p>
                                 <a href="/Penjual/Menu/detail/${menu.id}" class="badge badge-warning my-0" style="border:none">Detail</a>
                                 <a href="/Penjual/Menu/edit/${menu.id}" my-0" class="badge badge-success" style="border:none">Edit</a>
-                                <button class="badge badge-danger delete my-0" data-id="${menu.id}" data-name="${menu.menu_name}" style="border:none">Hapus</button>
+                                <button class="badge badge-danger delete my-0 d-inline" data-id="${menu.id}" data-name="${menu.menu_name}" style="border:none">Hapus</button>
+                                <div class="custom-control custom-switch">
+                                    <input type="checkbox" ${(menu.status==1) ? 'checked' : ''} class="custom-control-input" id="status-${menu.id}">
+                                    <label class="custom-control-label ${(menu.status==1) ? 'text-dark' : 'text-secondary'}" for="status-${menu.id}">${(menu.status==1) ? 'tersedia' : 'kosong'}</label>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>`
+            </div>
+            
+            <div class="modal fade" id="statusModal${menu.id}" tabindex="-1" aria-labelledby="statusModal${menu.id}Label" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="statusModal${menu.id}Label">Ketersediaan Toping</h5>
+                            <button type="button" class="close close-button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                        ${(topings.length>0) ? topings : 'Tidak ada topping'}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            `
         )
-    });
-}
 
+        $(`#status-${menu.id}`).change((e) => {
+            $.post('/Penjual/Menu/changeStatusMenu', {id:$(e.target).attr('id').split('-')[1], status:$(e.target).prop('checked') ? 1 : 0} , (data) => {
+                if($(e.target).prop('checked')){
+                    $(`#statusModal${menu.id}`).css('display', 'block').prop('class', 'modal fade show').prop('aria-hidden', 'false').prop('aria-modal', 'true').prop('role', 'dialog')
+                }else{
+                    run_filter()
+                }
+                
+            })
+        })
+    });
+    $('.close-button').click((e) => {
+        $('.modal').css('display', 'none').prop('class', 'modal fade').prop('aria-hidden', 'true').prop('aria-modal', 'false').prop('role', 'dialog')
+        run_filter()
+    })
+    $('.switch-toping').change((e) => {
+        $.post('/Penjual/Menu/changeStatusToping', {id:$(e.target).attr('id').split('-')[2], status:$(e.target).prop('checked') ? 1 : 0} , (data) => {
+            
+        })
+    })
+}
 
 function manage_pagin(position , pagin_length) {
     $('.pagin-number').parent().css('display' , 'none')
@@ -78,10 +127,10 @@ function manage_pagin(position , pagin_length) {
     }
 }
 
-function pagin(keyword=null) {
+function pagin(keyword=null, status) {
     $.get(
         `/Penjual/Menu/getPaginMenu` , 
-        {keyword},
+        {keyword,status},
         (data_length) => {
             per_page_length = 10
             pagin_length = Math.ceil(data_length/per_page_length)
@@ -142,7 +191,7 @@ function pagin(keyword=null) {
                     manage_pagin(pagin_length , pagin_length)
             } )
 
-            load_menu(keyword , per_page_length , (position-1)*per_page_length)
+            load_menu(keyword , per_page_length , (position-1)*per_page_length , status)
         })
 }
 
@@ -168,7 +217,7 @@ function delete_menu(data) {
           }).fail( () => {
             Swal.fire(
               'Gagal!',
-              'menu tidak ditemukan.',
+              `menu ${data.name} tidak ditemukan`,
               'warning'
             )
           } )
@@ -176,10 +225,10 @@ function delete_menu(data) {
     })
 }
 
-function load_menu(keyword=null , limit , indeks) {
+function load_menu(keyword=null , limit , indeks,status) {
     $.get(
         `/Penjual/Menu/getMenu` ,
-        {keyword : keyword , limit , indeks},  
+        {keyword : keyword , limit , indeks,status},  
         (data) => {
             // render menu
             render_menu(data)
@@ -195,18 +244,24 @@ function load_menu(keyword=null , limit , indeks) {
     )
 }
 
+function run_filter() {
+    status_filter = $('#status').val()
+    keyword = $('#navbar-search').val()
+    pagin(keyword, status_filter)
+}
 
 $(document).ready( () => {
-    pagin('')
+    run_filter()
     $('#navbar-search-button').click( () => {
-        keyword = $('#navbar-search').val()
-        pagin(keyword)
+        run_filter()
     } )
     $('#navbar-search').keypress( (event) => {
         var keycode = (event.keyCode ? event.keyCode : event.which);
         if(keycode == '13'){
-            keyword = $('#navbar-search').val()
-            pagin(keyword)
+            run_filter()
         }
+    } )
+    $('#status').change( () => {
+        run_filter()
     } )
 })

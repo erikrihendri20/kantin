@@ -5,9 +5,10 @@
     "homepage": "https://codeigniter.com",
     "license": "MIT",
     "require": {
-        "php": "^7.3 || ^8.0",
+        "php": "^7.3",
         "codeigniter4/framework": "^4",
-        "google/apiclient": "2.11"
+        "google/apiclient": "2.11",
+        "midtrans/midtrans-php": "^2.5"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",

@@ -14,7 +14,7 @@ class UserModel extends Model
     protected $returnType     = 'array';
     protected $useSoftDeletes = false;
 
-    protected $allowedFields = ['name', 'email' , 'role' , 'photo' , 'password' ,];
+    protected $allowedFields = ['name', 'email' , 'role' , 'photo' , 'password'];
 
     protected $protectFields = false;
 
@@ -42,6 +42,7 @@ class UserModel extends Model
         canteen_info.rating as canteen_info_rating,
         canteen_info.close_hours as close_hours, 
         canteen_info.open_hours as open_hours,
+        canteen_info.count_buyer as count_buyer, 
         canteen_info.status as status' 
         )
         ->where('users.role' , 3);

@@ -3,6 +3,7 @@
 namespace App\Controllers\Penjual;
 use App\Controllers\BaseController;
 use App\Models\CanteenInfoModel;
+use App\Models\UserLogModel;
 // use App\Models\MenuModel;
 // use App\Models\MenuTypeModel;
 // use App\Models\TopingModel;
@@ -17,6 +18,7 @@ class MyCanteen extends BaseController
     protected $user_model = null;
     protected $canteen_info_model = null;
     // protected $menu_type_model = null;
+    protected $user_log_model = null;
 
     public function __construct()
     {
@@ -26,6 +28,7 @@ class MyCanteen extends BaseController
         // $this->menu_type_model = new MenuTypeModel();
         $this->user_model = new UserModel();
         $this->canteen_info_model = new CanteenInfoModel();
+        $this->user_log_model = new UserLogModel();
     }
 
     public function index()
@@ -52,6 +55,7 @@ class MyCanteen extends BaseController
                 ],
             ],
             'plugins' => [],
+            'visitor' => count($this->user_log_model->getVisitor()),
             'styles' => 'penjual/my-canteen/index',
             'scripts' => 'penjual/my-canteen/index',
             'canteen' => $canteen
